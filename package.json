@@ -1,0 +1,27 @@
+{
+  "name": "houmio-driver-piled",
+  "version": "0.0.0",
+  "description": "Houmio driver to drive LED straight from Raspberry Pi IO pins",
+  "main": "index.js",
+  "dependencies": {
+    "async": "^0.9.0",
+    "carrier": "^0.2.0",
+    "net": "^1.0.2",
+    "baconjs": "^0.7.50",
+    "zerofill": "^0.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/houmio/houmio-driver-piled.git"
+  },
+  "author": "Antti Ropponen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/houmio/houmio-driver-piled/issues"
+  },
+  "homepage": "https://github.com/houmio/houmio-driver-piled"
+}
