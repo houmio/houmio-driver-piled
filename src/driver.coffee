@@ -8,6 +8,12 @@ fs = require 'fs'
 houmioBridge = process.env.HOUMIO_BRIDGE || "localhost:3001"
 bridgeSocket = new net.Socket()
 
+piLedFile = fs.open "/dev/pi-blaster", 'w', (err, fd) ->
+  if err
+    return null
+  else
+    return fd
+
 console.log "Using HOUMIO_BRIDGE=#{houmioBridge}"
 
 exit = (msg) ->
@@ -27,7 +33,6 @@ createPiledLine = (message) ->
   brightness = message.data.bri/255
   "#{message.data.protocolAddress}=#{brightness}"
 
-
 openBridgeMessageStream = (socket) -> (cb) ->
   socket.connect houmioBridge.split(":")[1], houmioBridge.split(":")[0], ->
     lineStream = toLines socket
@@ -44,6 +49,7 @@ async.series openStreams, (err, [piledWriteMessages]) ->
   piledWriteMessages
     .map createPiledLine
     .onValue (m)->
-      fs.writeFile '/dev/pi-blaster', m, (err) ->
-        if err then console.log "Write Error", err
+      if piLedFile
+        fs.writeFile piLedFile, m, (err) ->
+          if err then console.log "Write Error", err
   bridgeSocket.write (JSON.stringify { command: "driverReady", protocol: "piled"}) + "\n"
