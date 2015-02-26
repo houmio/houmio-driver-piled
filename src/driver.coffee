@@ -5,12 +5,22 @@ net = require 'net'
 zerofill = require 'zerofill'
 fs = require 'fs'
 shell =require 'shelljs'
+piblaster = require 'pi-blaster.js'
 
 houmioBridge = process.env.HOUMIO_BRIDGE || "localhost:3001"
 bridgeSocket = new net.Socket()
 piLedDeviceFile = "/dev/pi-blaster"
 
 console.log "Using HOUMIO_BRIDGE=#{houmioBridge}"
+fileWriteStream = null
+
+
+
+#fs.open piLedDeviceFile, "w", (err, fd) ->
+#  if err then console.log "KYRPAAA", err
+#  fileWriteStream = fs.createWriteStream piLedDeviceFile, { flags: 'w', encoding: 'utf8', fd: fd}
+#  fileWriteStream.write "4=0"
+
 
 exit = (msg) ->
   console.log msg
@@ -48,7 +58,7 @@ openStreams = [openBridgeMessageStream(bridgeSocket)]
 async.series openStreams, (err, [piledWriteMessages]) ->
   if err then exit err
   piledWriteMessages
-    .flatMap (m) -> Bacon.fromArray createPiledLines m
     .onValue (m)->
-      shell.echo(m.command).to(piLedDeviceFile)
+      piblaster.setPwm m.data.protocolAddress, m.data.bri/255
+
   bridgeSocket.write (JSON.stringify { command: "driverReady", protocol: "piled"}) + "\n"
